@@ -16,7 +16,12 @@ type SortableAdapter struct {
 }
 
 type impExts struct {
-	Bidder openrtb.RawJSON `json:"bidder"`
+	Bidder json.RawMessage `json:"bidder"`
+}
+
+type sortableCookies struct {
+	UID        *string `json:"uid,omitempty"`
+	ThirdParty *string `json:"third_party,omitempty"`
 }
 
 func NewSortableBidder(client *http.Client, endpoint string) *SortableAdapter {
@@ -33,8 +38,8 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 
 	headers := http.Header{}
 	headers.Add("Content-Type", "application/json")
-	// TODO: Add other headers here?
 
+	// Hoist the contents of ext.bidder up one level
 	for i, imp := range request.Imp {
 		var extStuff impExts
 		err := json.Unmarshal(imp.Ext, &extStuff)
@@ -47,6 +52,21 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 	reqJSON, err := json.Marshal(request)
 	if err != nil {
 		errs = append(errs, err)
+	}
+
+	if request.User != nil {
+		var cookies sortableCookies
+		err := json.Unmarshal([]byte(request.User.BuyerUID), &cookies)
+		if err != nil {
+			errs = append(errs, err)
+		} else {
+			if cookies.UID != nil {
+				headers.Add("Cookie", "d7s_uid="+*cookies.UID)
+			}
+			if cookies.ThirdParty != nil {
+				headers.Add("Cookie", "d7s_dc="+*cookies.ThirdParty)
+			}
+		}
 	}
 
 	return []*adapters.RequestData{{
