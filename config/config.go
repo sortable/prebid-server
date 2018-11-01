@@ -582,7 +582,7 @@ func SetupViper(v *viper.Viper, filename string) {
 	v.SetDefault("adapters.somoaudience.endpoint", "http://publisher-east.mobileadtrading.com/rtb/bid")
 	v.SetDefault("adapters.sovrn.endpoint", "http://ap.lijit.com/rtb/bid?src=prebid_server")
 	v.SetDefault("adapters.sortable.endpoint", "http://c.deployads.com/openrtb2/auction")
-	v.SetDefault("adapters.sortable.usersync_url", "//c.deployads.com/openrtb/sync")
+	v.SetDefault("adapters.sortable.usersync_url", "//c.deployads.com/pbs/cookiesync?gdpr={{gdpr}}&gdpr_consent={{gdpr_consent}}&")
 	v.SetDefault("adapters.adkerneladn.endpoint", "http://{{.Host}}/rtbpub?account={{.PublisherID}}")
 	v.SetDefault("adapters.33across.partner_id", "")
 	v.SetDefault("adapters.33across.endpoint", "http://ssc.33across.com/api/v1/hb")
