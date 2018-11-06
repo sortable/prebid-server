@@ -9,6 +9,6 @@ import (
 )
 
 func TestJsonSamples(t *testing.T) {
-	sortableAdapter := NewSortableBidder(new(http.Client), "http://c.deployads.com/openrtb2/auction")
+	sortableAdapter := NewSortableBidder(new(http.Client), "http://c.deployads.com/openrtb2/auction?src=pbs")
 	adapterstest.RunJSONBidderTest(t, "sortabletest", sortableAdapter)
 }
