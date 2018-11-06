@@ -2,6 +2,7 @@ package sortable
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/mxmCherry/openrtb"
@@ -30,6 +31,9 @@ func NewSortableBidder(client *http.Client, endpoint string) *SortableAdapter {
 
 func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters.RequestData, []error) {
 	errs := make([]error, 0, len(request.Imp))
+	if request.Site == nil || request.Site.Publisher == nil || request.Site.Publisher.ID == "" {
+		errs = append(errs, errors.New("Sortable requires site.publisher.id to be set"))
+	}
 
 	headers := http.Header{}
 	headers.Add("Content-Type", "application/json")
