@@ -19,11 +19,6 @@ type impExts struct {
 	Bidder json.RawMessage `json:"bidder"`
 }
 
-type sortableCookies struct {
-	UID        *string `json:"uid,omitempty"`
-	ThirdParty *string `json:"third_party,omitempty"`
-}
-
 func NewSortableBidder(client *http.Client, endpoint string) *SortableAdapter {
 	a := &adapters.HTTPAdapter{Client: client}
 
@@ -55,16 +50,13 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 	}
 
 	if request.User != nil {
-		var cookies sortableCookies
+		var cookies map[string]string
 		err := json.Unmarshal([]byte(request.User.BuyerUID), &cookies)
 		if err != nil {
 			errs = append(errs, err)
 		} else {
-			if cookies.UID != nil {
-				headers.Add("Cookie", "d7s_uid="+*cookies.UID)
-			}
-			if cookies.ThirdParty != nil {
-				headers.Add("Cookie", "d7s_dc="+*cookies.ThirdParty)
+			for key, value := range cookies {
+				headers.Add("Cookie", "d7s_"+key+"="+value)
 			}
 		}
 	}

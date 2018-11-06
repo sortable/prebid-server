@@ -34,7 +34,7 @@
       "page": "http://www.publisher.com/awesome/site"
     },
     "user": {
-      "buyeruid": "test_reader_id"
+      "buyeruid": "{\"uid\": \"test user id\"}"
     }
   },
   "httpCalls": [
@@ -57,11 +57,9 @@
           "Dnt": [
             "0"
           ],
-          "Cookie": [
-            "ljt_reader=test_reader_id"
-          ]
+          "Cookie": ["d7s_uid=test user id"]
         },
-        "uri": "http://c.deployads.com/openrtb2/auction",
+        "uri": "http://c.deployads.com/openrtb2/auction?src=pbs",
         "body": {
           "id": "test-request-id",
           "imp": [
@@ -89,7 +87,7 @@
             "page": "http://www.publisher.com/awesome/site"
           },
           "user": {
-            "buyeruid": "test_reader_id"
+            "buyeruid": "{\"uid\": \"test user id\"}"
           },
           "device": {
             "ua": "test-user-agent",
