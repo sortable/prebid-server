@@ -29,10 +29,15 @@ func NewSortableBidder(client *http.Client, endpoint string) *SortableAdapter {
 	}
 }
 
+func isValidRequest(request *openrtb.BidRequest) bool {
+	return !((request.Site == nil || request.Site.Publisher == nil || request.Site.Publisher.ID == "") && (request.App == nil || request.App.Bundle == ""))
+}
+
 func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters.RequestData, []error) {
 	errs := make([]error, 0, len(request.Imp))
-	if request.Site == nil || request.Site.Publisher == nil || request.Site.Publisher.ID == "" {
-		errs = append(errs, errors.New("Sortable requires site.publisher.id to be set"))
+	if !isValidRequest(request) {
+		errs = append(errs, errors.New("Sortable requires site.publisher.id or app.bundle to be set"))
+		return nil, errs
 	}
 
 	headers := http.Header{}
@@ -53,7 +58,7 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 		errs = append(errs, err)
 	}
 
-	if request.User != nil {
+	if request.User != nil && request.User.BuyerUID != "" {
 		var cookies map[string]string
 		err := json.Unmarshal([]byte(request.User.BuyerUID), &cookies)
 		if err != nil {
@@ -64,7 +69,6 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 			}
 		}
 	}
-
 	return []*adapters.RequestData{{
 		Method:  "POST",
 		Uri:     s.URI,
