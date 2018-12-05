@@ -30,13 +30,16 @@ func NewSortableBidder(client *http.Client, endpoint string) *SortableAdapter {
 }
 
 func isValidRequest(request *openrtb.BidRequest) bool {
-	return !((request.Site == nil || request.Site.Publisher == nil || request.Site.Publisher.ID == "") && (request.App == nil || request.App.Bundle == ""))
+	return !((request.Site == nil || request.Site.Publisher == nil || request.Site.Publisher.ID == "") &&
+		(request.App == nil || request.App.Bundle == "")) &&
+		// These fields should always be here, unless PBS couldn't infer them from the request
+		!(request.Device == nil || request.Device.IP == "" || request.Device.UA == "")
 }
 
 func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters.RequestData, []error) {
 	errs := make([]error, 0, len(request.Imp))
 	if !isValidRequest(request) {
-		errs = append(errs, errors.New("Sortable requires site.publisher.id or app.bundle to be set"))
+		errs = append(errs, errors.New("Sortable requires site.publisher.id or app.bundle to be set, and that both device.ip and device.ua are set"))
 		return nil, errs
 	}
 
