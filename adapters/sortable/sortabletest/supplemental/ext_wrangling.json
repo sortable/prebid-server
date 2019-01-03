@@ -69,8 +69,8 @@
             ]
           },
           "bidfloor": 0.42,
+          "tagid": "123456",
           "ext": {
-            "tagid": "123456",
             "extraField": {
               "foo": "bar"
             }

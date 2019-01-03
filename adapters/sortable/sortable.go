@@ -62,6 +62,15 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 				delete(extStuff.Bidder, "bidfloor")
 			}
 		}
+
+		if request.Imp[i].TagID == "" {
+			maybeTagid := extStuff.Bidder["tagid"]
+			tagid, ok := maybeTagid.(string)
+			if ok {
+				request.Imp[i].TagID = tagid
+				delete(extStuff.Bidder, "tagid")
+			}
+		}
 		marshalled, err := json.Marshal(extStuff.Bidder)
 		if err != nil {
 			errs = append(errs, err)
