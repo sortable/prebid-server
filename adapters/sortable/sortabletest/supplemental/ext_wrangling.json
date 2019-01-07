@@ -16,7 +16,11 @@
       },
       "ext": {
         "bidder": {
-          "tagid": "123456"
+          "tagid": "123456",
+          "extraField": {
+            "foo": "bar"
+          },
+          "bidfloor": 0.42
         }
       }
     }],
@@ -34,15 +38,7 @@
       }
     },
     "user": {
-      "buyeruid": "{\"uid\": \"test user id\"}",
-      "ext": {
-        "consent": "consent-string"
-      }
-    },
-    "regs": {
-      "ext": {
-        "gdpr": 1
-      }
+      "buyeruid": "{\"uid\": \"test user id\"}"
     }
   },
 
@@ -72,9 +68,12 @@
               }
             ]
           },
+          "bidfloor": 0.42,
           "tagid": "123456",
           "ext": {
-
+            "extraField": {
+              "foo": "bar"
+            }
           }
         }],
         "site": {
@@ -85,20 +84,12 @@
           }
         },
         "user": {
-          "buyeruid": "{\"uid\": \"test user id\"}",
-          "ext": {
-            "consent": "consent-string"
-          }
+          "buyeruid": "{\"uid\": \"test user id\"}"
         },
         "device": {
           "ua": "test-user-agent",
           "ip": "123.123.123.123",
           "language": "en"
-        },
-        "regs": {
-          "ext": {
-            "gdpr": 1
-          }
         }
       }
     },

@@ -17,7 +17,7 @@ type SortableAdapter struct {
 }
 
 type impExts struct {
-	Bidder json.RawMessage `json:"bidder"`
+	Bidder map[string]interface{} `json:"bidder"`
 }
 
 func NewSortableBidder(client *http.Client, endpoint string) *SortableAdapter {
@@ -53,7 +53,31 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 		if err != nil {
 			errs = append(errs, err)
 		}
-		request.Imp[i].Ext = extStuff.Bidder
+		// Further hoist certain fields up one level further
+		if request.Imp[i].BidFloor == 0 {
+			maybeBidfloor := extStuff.Bidder["bidfloor"]
+			bidfloor, ok := maybeBidfloor.(float64)
+			if ok {
+				request.Imp[i].BidFloor = bidfloor
+				delete(extStuff.Bidder, "bidfloor")
+			}
+		}
+
+		if request.Imp[i].TagID == "" {
+			maybeTagid := extStuff.Bidder["tagid"]
+			tagid, ok := maybeTagid.(string)
+			if ok {
+				request.Imp[i].TagID = tagid
+				delete(extStuff.Bidder, "tagid")
+			}
+		}
+		marshalled, err := json.Marshal(extStuff.Bidder)
+		if err != nil {
+			errs = append(errs, err)
+		} else {
+			request.Imp[i].Ext = marshalled
+		}
+
 	}
 
 	reqJSON, err := json.Marshal(request)
