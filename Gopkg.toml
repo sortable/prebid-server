@@ -75,7 +75,7 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/vrischmann/go-metrics-influxdb"
+  name = "github.com/cyberdelia/go-metrics-graphite"
 
 [[constraint]]
   name = "github.com/yudai/gojsondiff"

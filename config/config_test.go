@@ -55,11 +55,9 @@ http_client:
   idle_connection_timeout_seconds: 30
 recaptcha_secret: asdfasdfasdfasdf
 metrics:
-  influxdb:
-    host: upstream:8232
-    database: metricsdb
-    username: admin
-    password: admin1324
+  graphite:
+    host: graphite_host:2003
+    interval_sec: 3
 datacache:
   type: postgres
   filename: /usr/db/db.db
@@ -137,10 +135,8 @@ func TestFullConfig(t *testing.T) {
 	cmpInts(t, "gdpr.host_vendor_id", cfg.GDPR.HostVendorID, 15)
 	cmpBools(t, "gdpr.usersync_if_ambiguous", cfg.GDPR.UsersyncIfAmbiguous, true)
 	cmpStrings(t, "recaptcha_secret", cfg.RecaptchaSecret, "asdfasdfasdfasdf")
-	cmpStrings(t, "metrics.influxdb.host", cfg.Metrics.Influxdb.Host, "upstream:8232")
-	cmpStrings(t, "metrics.influxdb.database", cfg.Metrics.Influxdb.Database, "metricsdb")
-	cmpStrings(t, "metrics.influxdb.username", cfg.Metrics.Influxdb.Username, "admin")
-	cmpStrings(t, "metrics.influxdb.password", cfg.Metrics.Influxdb.Password, "admin1324")
+	cmpStrings(t, "graphite.host", cfg.Metrics.Graphite.Host, "graphite_host:2003")
+	cmpInts(t, "graphite.interval_sec", int(cfg.Metrics.Graphite.IntervalSec), 3)
 	cmpStrings(t, "datacache.type", cfg.DataCache.Type, "postgres")
 	cmpStrings(t, "datacache.filename", cfg.DataCache.Filename, "/usr/db/db.db")
 	cmpInts(t, "datacache.cache_size", cfg.DataCache.CacheSize, 10000000)
