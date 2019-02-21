@@ -31,7 +31,7 @@ func NewMetricsEngine(cfg *config.Configuration, adapterList []openrtb_ext.Bidde
 		go graphite.Graphite(
 			returnEngine.GoMetrics.MetricsRegistry,
 			time.Duration(cfg.Metrics.Graphite.IntervalSec)*time.Second,
-			"servers."+hostname+".prebid-server",
+			"servers.com.sortable.ec2."+hostname+".prebid-server",
 			addr,
 		)
 		// Graphite is not added to the engine list as goMetrics takes care of it already.
