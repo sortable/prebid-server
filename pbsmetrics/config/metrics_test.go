@@ -38,7 +38,7 @@ func TestMultiMetricsEngine(t *testing.T) {
 	cfg := mainConfig.Configuration{}
 	cfg.Metrics.Influxdb.Host = "localhost"
 	cfg.Metrics.Graphite.Host = "localhost:2003"
-	cfg.Metrics.Graphite.Prefix = "test."
+	cfg.Metrics.Graphite.Prefix = "test"
 	adapterList := openrtb_ext.BidderList()
 	goEngine := pbsmetrics.NewMetrics(metrics.NewPrefixedRegistry("prebidserver."), adapterList)
 	engineList := make(MultiMetricsEngine, 2)
