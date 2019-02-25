@@ -165,12 +165,21 @@ type Adapter struct {
 }
 
 type Metrics struct {
+	Influxdb   InfluxMetrics     `mapstructure:"influxdb"`
 	Graphite   GraphiteMetrics   `mapstructure:"graphite"`
 	Prometheus PrometheusMetrics `mapstructure:"prometheus"`
 }
 
+type InfluxMetrics struct {
+	Host     string `mapstructure:"host"`
+	Database string `mapstructure:"database"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+}
+
 type GraphiteMetrics struct {
 	Host        string `mapstructure:"host"`
+	Prefix      string `mapstructure:"prefix"`
 	IntervalSec uint   `mapstructure:"interval_sec"`
 }
 
@@ -299,7 +308,12 @@ func SetupViper(v *viper.Viper, filename string) {
 	v.SetDefault("http_client.max_idle_connections_per_host", 10)
 	v.SetDefault("http_client.idle_connection_timeout_seconds", 60)
 	// no metrics configured by default (metrics{host|database|username|password})
+	v.SetDefault("metrics.influxdb.host", "")
+	v.SetDefault("metrics.influxdb.database", "")
+	v.SetDefault("metrics.influxdb.username", "")
+	v.SetDefault("metrics.influxdb.password", "")
 	v.SetDefault("metrics.graphite.host", "")
+	v.SetDefault("metrics.graphite.prefix", "")
 	v.SetDefault("metrics.graphite.interval_sec", 10)
 	v.SetDefault("metrics.prometheus.endpoint", "")
 	v.SetDefault("metrics.prometheus.port", 0)

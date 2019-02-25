@@ -133,6 +133,18 @@
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:4f269c76ac3a3ac14014412f3ae2149cca9a606183c86012d6ed864e78801009"
+  name = "github.com/influxdata/influxdb"
+  packages = [
+    "client",
+    "models",
+    "pkg/escape",
+  ]
+  pruneopts = "UT"
+  revision = "5766854b95ae86cccf6cc8ffe4c5bb9eacc994b8"
+  version = "v1.6.1"
+
+[[projects]]
   digest = "1:ccfa094742ce1c97fd3f6481e1bf98f3d9862510eee2bc0eb56e2745396bd330"
   name = "github.com/julienschmidt/httprouter"
   packages = ["."]
@@ -346,6 +358,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:6764eb3d860b8bbcec6713633c372a44d31fbc73ab740d1f95682782373d8293"
+  name = "github.com/vrischmann/go-metrics-influxdb"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "43af8332c303f62ef62663b02b3b7d8a9802002a"
+
+[[projects]]
+  branch = "master"
   digest = "1:f4e5276a3b356f4692107047fd2890f2fe534f4feeb6b1fd2f6dfbd87f1ccf54"
   name = "github.com/xeipuuv/gojsonpointer"
   packages = ["."]
@@ -472,6 +492,7 @@
     "github.com/rs/cors",
     "github.com/spf13/viper",
     "github.com/stretchr/testify/assert",
+    "github.com/vrischmann/go-metrics-influxdb",
     "github.com/xeipuuv/gojsonschema",
     "github.com/yudai/gojsondiff",
     "github.com/yudai/gojsondiff/formatter",

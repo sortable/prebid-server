@@ -2,15 +2,16 @@ package config
 
 import (
 	"net"
-	"os"
 	"time"
 
 	"github.com/cyberdelia/go-metrics-graphite"
+	"github.com/golang/glog"
 	"github.com/prebid/prebid-server/config"
 	"github.com/prebid/prebid-server/openrtb_ext"
 	"github.com/prebid/prebid-server/pbsmetrics"
 	"github.com/prebid/prebid-server/pbsmetrics/prometheus"
 	"github.com/rcrowley/go-metrics"
+	"github.com/vrischmann/go-metrics-influxdb"
 )
 
 // NewMetricsEngine reads the configuration and returns the appropriate metrics engine
@@ -22,19 +23,35 @@ func NewMetricsEngine(cfg *config.Configuration, adapterList []openrtb_ext.Bidde
 	engineList := make(MultiMetricsEngine, 0, 2)
 	returnEngine := DetailedMetricsEngine{}
 
-	if cfg.Metrics.Graphite.Host != "" {
-		returnEngine.GoMetrics = pbsmetrics.NewMetrics(metrics.NewRegistry(), adapterList)
+	if cfg.Metrics.Influxdb.Host != "" || cfg.Metrics.Graphite.Host != "" {
+		// Currently use go-metrics as the metrics piece for influx
+		returnEngine.GoMetrics = pbsmetrics.NewMetrics(metrics.NewPrefixedRegistry("prebidserver."), adapterList)
 		engineList = append(engineList, returnEngine.GoMetrics)
-		// Set up the Graphite logger
-		addr, _ := net.ResolveTCPAddr("tcp", cfg.Metrics.Graphite.Host)
-		hostname, _ := os.Hostname()
-		go graphite.Graphite(
-			returnEngine.GoMetrics.MetricsRegistry,
-			time.Duration(cfg.Metrics.Graphite.IntervalSec)*time.Second,
-			"servers.com.sortable.ec2."+hostname+".prebid-server",
-			addr,
-		)
-		// Graphite is not added to the engine list as goMetrics takes care of it already.
+		if cfg.Metrics.Influxdb.Host != "" {
+			// Set up the Influx logger
+			go influxdb.InfluxDB(
+				returnEngine.GoMetrics.MetricsRegistry, // metrics registry
+				time.Second*10,                         // interval
+				cfg.Metrics.Influxdb.Host,              // the InfluxDB url
+				cfg.Metrics.Influxdb.Database,          // your InfluxDB database
+				cfg.Metrics.Influxdb.Username,          // your InfluxDB user
+				cfg.Metrics.Influxdb.Password,          // your InfluxDB password
+			)
+		}
+		if cfg.Metrics.Graphite.Host != "" {
+			addr, err := net.ResolveTCPAddr("tcp", cfg.Metrics.Graphite.Host)
+			if err == nil {
+				go graphite.Graphite(
+					returnEngine.GoMetrics.MetricsRegistry,
+					time.Duration(cfg.Metrics.Graphite.IntervalSec)*time.Second,
+					cfg.Metrics.Graphite.Prefix,
+					addr,
+				)
+			} else {
+				glog.Errorf("Cannot resolve graphite host %s: %v", cfg.Metrics.Graphite.Host, err)
+			}
+		}
+		// Influx and graphite is not added to the engine list as goMetrics takes care of it already.
 	}
 	if cfg.Metrics.Prometheus.Port != 0 {
 		// Set up the Prometheus metrics.
