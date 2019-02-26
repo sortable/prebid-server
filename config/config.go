@@ -289,6 +289,7 @@ func validateAdapters(adapterMap map[string]Adapter, errs configErrors) configEr
 
 type Metrics struct {
 	Influxdb   InfluxMetrics     `mapstructure:"influxdb"`
+	Graphite   GraphiteMetrics   `mapstructure:"graphite"`
 	Prometheus PrometheusMetrics `mapstructure:"prometheus"`
 }
 
@@ -303,6 +304,10 @@ type InfluxMetrics struct {
 	Password string `mapstructure:"password"`
 }
 
+type GraphiteMetrics struct {
+	Host        string `mapstructure:"host"`
+	Prefix      string `mapstructure:"prefix"`
+	IntervalSec uint   `mapstructure:"interval_sec"`
 type PrometheusMetrics struct {
 	Port             int    `mapstructure:"port"`
 	Namespace        string `mapstructure:"namespace"`
@@ -490,6 +495,10 @@ func SetupViper(v *viper.Viper, filename string) {
 	v.SetDefault("metrics.influxdb.database", "")
 	v.SetDefault("metrics.influxdb.username", "")
 	v.SetDefault("metrics.influxdb.password", "")
+	v.SetDefault("metrics.graphite.host", "")
+	v.SetDefault("metrics.graphite.prefix", "")
+	v.SetDefault("metrics.graphite.interval_sec", 10)
+	v.SetDefault("metrics.prometheus.endpoint", "")
 	v.SetDefault("metrics.prometheus.port", 0)
 	v.SetDefault("metrics.prometheus.namespace", "")
 	v.SetDefault("metrics.prometheus.subsystem", "")

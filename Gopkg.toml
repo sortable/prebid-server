@@ -78,6 +78,10 @@
   name = "github.com/vrischmann/go-metrics-influxdb"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/cyberdelia/go-metrics-graphite"
+
+[[constraint]]
   name = "github.com/yudai/gojsondiff"
   version = "1.0.0"
 

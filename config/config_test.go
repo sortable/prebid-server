@@ -61,6 +61,10 @@ metrics:
     database: metricsdb
     username: admin
     password: admin1324
+  graphite:
+    host: graphite_host:2003
+    prefix: test_prefix
+    interval_sec: 3
 datacache:
   type: postgres
   filename: /usr/db/db.db
@@ -164,6 +168,9 @@ func TestFullConfig(t *testing.T) {
 	cmpStrings(t, "metrics.influxdb.database", cfg.Metrics.Influxdb.Database, "metricsdb")
 	cmpStrings(t, "metrics.influxdb.username", cfg.Metrics.Influxdb.Username, "admin")
 	cmpStrings(t, "metrics.influxdb.password", cfg.Metrics.Influxdb.Password, "admin1324")
+	cmpStrings(t, "metrics.graphite.host", cfg.Metrics.Graphite.Host, "graphite_host:2003")
+	cmpStrings(t, "metrics.graphite.prefix", cfg.Metrics.Graphite.Prefix, "test_prefix")
+	cmpInts(t, "metrics.graphite.interval_sec", int(cfg.Metrics.Graphite.IntervalSec), 3)
 	cmpStrings(t, "datacache.type", cfg.DataCache.Type, "postgres")
 	cmpStrings(t, "datacache.filename", cfg.DataCache.Filename, "/usr/db/db.db")
 	cmpInts(t, "datacache.cache_size", cfg.DataCache.CacheSize, 10000000)
