@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/mxmCherry/openrtb"
 	"github.com/prebid/prebid-server/adapters"
@@ -45,6 +46,13 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 
 	headers := http.Header{}
 	headers.Add("Content-Type", "application/json")
+
+	if request.Device != nil {
+		addHeaderIfNonEmpty(headers, "User-Agent", request.Device.UA)
+		addHeaderIfNonEmpty(headers, "X-Forwarded-For", request.Device.IP)
+		addHeaderIfNonEmpty(headers, "Accept-Language", request.Device.Language)
+		addHeaderIfNonEmpty(headers, "DNT", strconv.Itoa(int(request.Device.DNT)))
+	}
 
 	// Hoist the contents of ext.bidder up one level
 	for i, imp := range request.Imp {
@@ -96,6 +104,7 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 			}
 		}
 	}
+
 	return []*adapters.RequestData{{
 		Method:  "POST",
 		Uri:     s.URI,
@@ -125,4 +134,10 @@ func (s *SortableAdapter) MakeBids(internalRequest *openrtb.BidRequest, external
 		}
 	}
 	return bidResponse, nil
+}
+
+func addHeaderIfNonEmpty(headers http.Header, headerName string, headerValue string) {
+	if len(headerValue) > 0 {
+		headers.Add(headerName, headerValue)
+	}
 }

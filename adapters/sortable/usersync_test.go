@@ -2,23 +2,18 @@ package sortable
 
 import (
 	"testing"
+	"text/template"
 
-	"github.com/prebid/prebid-server/config"
-	"github.com/prebid/prebid-server/openrtb_ext"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSortableSyncer(t *testing.T) {
-	config := config.Configuration{ExternalURL: "http://localhost", Adapters: map[string]config.Adapter{
-		string(openrtb_ext.BidderSortable): {
-			UserSyncURL: "http://localhost/prebid/cookiesync?gdpr={{gdpr}}&gdpr_consent={{gdpr_consent}}&",
-		},
-	}}
-	sortable := NewSortableSyncer(&config)
-	syncInfo := sortable.GetUsersyncInfo("0", "")
-	assert.Equal(t, "http://localhost/prebid/cookiesync?gdpr=0&gdpr_consent=&redir=http%3A%2F%2Flocalhost%2Fsetuid%3Fbidder%3Dsortable%26gdpr%3D0%26gdpr_consent%3D%26uid%3D%24UID", syncInfo.URL)
+	temp := template.Must(template.New("sync-template").Parse("//c.deployads.com/prebid/cookiesync?gdpr={{.GDPR}}&gdpr_consent={{.GDPRConsent}}&redir=localhost%2Fsetuid%3Fbidder%3Dsortable%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}"))
+	syncer := NewSortableSyncer(temp)
+	syncInfo, err := syncer.GetUsersyncInfo("1", "BOPVK28OVJoTBABABAENBs-AAAAhuAKAANAAoACwAGgAPAAxAB0AHgAQAAiABOADkA")
+	assert.NoError(t, err)
+	assert.Equal(t, "//c.deployads.com/prebid/cookiesync?gdpr=1&gdpr_consent=BOPVK28OVJoTBABABAENBs-AAAAhuAKAANAAoACwAGgAPAAxAB0AHgAQAAiABOADkA&redir=localhost%2Fsetuid%3Fbidder%3Dsortable%26gdpr%3D1%26gdpr_consent%3DBOPVK28OVJoTBABABAENBs-AAAAhuAKAANAAoACwAGgAPAAxAB0AHgAQAAiABOADkA", syncInfo.URL)
 	assert.Equal(t, "redirect", syncInfo.Type)
-	if sortable.GDPRVendorID() != 145 {
-		t.Errorf("Wrong Sortable GDPR VendorID. Got %d", sortable.GDPRVendorID())
-	}
+	assert.EqualValues(t, 145, syncer.GDPRVendorID())
+	assert.Equal(t, false, syncInfo.SupportCORS)
 }
