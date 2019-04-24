@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/mxmCherry/openrtb"
 	"github.com/prebid/prebid-server/adapters"
@@ -51,7 +50,6 @@ func (s *SortableAdapter) MakeRequests(request *openrtb.BidRequest) ([]*adapters
 		addHeaderIfNonEmpty(headers, "User-Agent", request.Device.UA)
 		addHeaderIfNonEmpty(headers, "X-Forwarded-For", request.Device.IP)
 		addHeaderIfNonEmpty(headers, "Accept-Language", request.Device.Language)
-		addHeaderIfNonEmpty(headers, "DNT", strconv.Itoa(int(request.Device.DNT)))
 	}
 
 	// Hoist the contents of ext.bidder up one level
